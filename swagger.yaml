@@ -2,11 +2,11 @@ openapi: '3.0.0'
 info:
   version: '0.0.2'
   title: 'Icelandair Payment Methods'
-  description: "PRELIMINARY - Icelandair's custom payment methods to be used by payment orchestrator TODO: Some checksum functionality to validate the content"
+  description: "Icelandair's custom payment methods to be used by payment orchestrator"
 paths:
   /gift_cert/authorize:
     post:
-      summary: Get the status and available amount of a provided gift certificate.
+      summary: Authorize the transaction for the gift certificate.
       tags:
         - Gift certificates
       requestBody:
@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/gift_cert_info'
+                $ref: '#/components/schemas/gift_cert_authorization'
         '404':
           description: No gift certificate found for the provided `certificationKey` or it has expired.
           content:
@@ -512,8 +512,23 @@ components:
           type: boolean
         certificationKey:
           $ref: '#/components/schemas/certification_key'
+      required: [certificationKey, isValid, amountAvailable, currencyCode]
+      description: Detailed information about a gift certificate.
+
+    gift_cert_authorization:
+      type: object
+      properties:
+        amountAvailable:
+          $ref: '#/components/schemas/amount'
+        currency:
+          $ref: '#/components/schemas/currency_code'
+        isValid:
+          type: boolean
+        certificationKey:
+          $ref: '#/components/schemas/certification_key'
         transaction:
           $ref: '#/components/schemas/transaction'
+
       required: [certificationKey, isValid, amountAvailable, currencyCode]
       description: Detailed information about a gift certificate.
 
