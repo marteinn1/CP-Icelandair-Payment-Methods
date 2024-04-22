@@ -89,14 +89,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/gift_cert_info'
-        '429':
-          description: Too many failed requests for this `sessionId`.
+        '404':
+          description: No gift certificate found for the provided `certificationKey` or it has expired.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '404':
-          description: No gift certificate found for the provided `certificationKey` or it has expired.
+        '410':
+          description: Certificate has expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many failed requests for this `sessionId`.
           content:
             application/json:
               schema:
@@ -127,22 +133,12 @@ paths:
                 - currencyCode
                 - orderType
               properties:
-                certificationKey:
-                  $ref: '#/components/schemas/certification_key'
                 amount:
                   $ref: '#/components/schemas/amount'
-                currency:
-                  $ref: '#/components/schemas/currency_code'
-                orderType:
-                  $ref: '#/components/schemas/order_type'
-                orderId:
-                  $ref: '#/components/schemas/order_id'
-                sessionId:
+                session_id:
                   $ref: '#/components/schemas/session_id'
-                timestamp:
-                  $ref: '#/components/schemas/timestamp'
                 transaction:
-                  $ref: '#/components/schemas/transaction'
+                  $ref: '#/components/schemas/transaction_id'
       responses:
         '200':
           description: Capture was successful for provided `certificationKey`.
