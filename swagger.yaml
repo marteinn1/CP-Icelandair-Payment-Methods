@@ -1,718 +1,553 @@
----
-swagger: "2.0"
+openapi: '3.0.0'
 info:
-  description: "This is a sample server Petstore server.  You can find out more about\
-    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
-    \  For this sample, you can use the api key `special-key` to test the authorization\
-    \ filters."
-  version: "1.0.5"
-  title: "Swagger Petstore"
-  termsOfService: "http://swagger.io/terms/"
-  contact:
-    email: "apiteam@swagger.io"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "petstore.swagger.io"
-basePath: "/v2"
-tags:
-- name: "pet"
-  description: "Everything about your Pets"
-  externalDocs:
-    description: "Find out more"
-    url: "http://swagger.io"
-- name: "store"
-  description: "Access to Petstore orders"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-schemes:
-- "https"
-- "http"
+  version: '0.0.2'
+  title: 'Icelandair Payment Methods'
+  description: "PRELIMINARY - Icelandair's custom payment methods to be used by payment orchestrator TODO: Some checksum functionality to validate the content"
 paths:
-  /pet/{petId}/uploadImage:
+  /gift_cert/authorize:
     post:
+      summary: Get the status and available amount of a provided gift certificate.
       tags:
-      - "pet"
-      summary: "uploads an image"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to update"
+        - Gift certificates
+      requestBody:
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - certificationKey
+                - amount
+                - currency
+                - orderType
+                - sessionId
+                - timestamp
+              properties:
+                certificationKey:
+                  $ref: '#/components/schemas/certification_key'
+                amount: 
+                  $ref: '#/components/schemas/amount'
+                currency:
+                  $ref: '#/components/schemas/currency_code'
+                timestamp:
+                  $ref: '#/components/schemas/timestamp'
+                sessionId:
+                  $ref: '#/components/schemas/session_id'
+                orderType:
+                  $ref: '#/components/schemas/order_type'
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
+        '200':
+          description: The status and available amount of provided `certificationKey`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gift_cert_info'
+        '404':
+          description: No gift certificate found for the provided `certificationKey` or it has expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet:
+        - ApiKeyAuth: []
+    
+  /gift_cert/validate:
     post:
+      summary: Get the status and available amount of a provided gift certificate.
       tags:
-      - "pet"
-      summary: "Add a new pet to the store"
-      description: ""
-      operationId: "addPet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
+        - Gift certificates
+      requestBody:
         required: true
-        schema:
-          $ref: "#/definitions/Pet"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - certificationKey
+                - amount
+                - currencyCode
+                - orderType
+              properties:
+                certificationKey:
+                  $ref: '#/components/schemas/certification_key'
+                currency:
+                  $ref: '#/components/schemas/currency_code'
+                sessionId:
+                  $ref: '#/components/schemas/session_id'
+                timestamp:
+                  $ref: '#/components/schemas/timestamp'
       responses:
-        405:
-          description: "Invalid input"
+        '200':
+          description: The status and available amount of provided `certificationKey`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gift_cert_info'
+        '429':
+          description: Too many failed requests for this `sessionId`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No gift certificate found for the provided `certificationKey` or it has expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    put:
-      tags:
-      - "pet"
-      summary: "Update an existing pet"
-      description: ""
-      operationId: "updatePet"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Pet object that needs to be added to the store"
-        required: true
-        schema:
-          $ref: "#/definitions/Pet"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-        405:
-          description: "Validation exception"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByStatus:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findPetsByStatus"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "available"
-          - "pending"
-          - "sold"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid status value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /pet/findByTags:
-    get:
-      tags:
-      - "pet"
-      summary: "Finds Pets by tags"
-      description: "Multiple tags can be provided with comma separated strings. Use\
-        \ tag1, tag2, tag3 for testing."
-      operationId: "findPetsByTags"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "tags"
-        in: "query"
-        description: "Tags to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid tag value"
-      security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-      deprecated: true
-  /pet/{petId}:
-    get:
-      tags:
-      - "pet"
-      summary: "Find pet by ID"
-      description: "Returns a single pet"
-      operationId: "getPetById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet to return"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Pet"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
-      security:
-      - api_key: []
+        - ApiKeyAuth: []
+    
+  /gift_cert/capture:
     post:
+      summary: Capture a specified amount from a gift certificate.
       tags:
-      - "pet"
-      summary: "Updates a pet in the store with form data"
-      description: ""
-      operationId: "updatePetWithForm"
-      consumes:
-      - "application/x-www-form-urlencoded"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "petId"
-        in: "path"
-        description: "ID of pet that needs to be updated"
+        - Gift certificates
+      requestBody:
         required: true
-        type: "integer"
-        format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the pet"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the pet"
-        required: false
-        type: "string"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - certificationKey
+                - amount
+                - currencyCode
+                - orderType
+              properties:
+                certificationKey:
+                  $ref: '#/components/schemas/certification_key'
+                amount:
+                  $ref: '#/components/schemas/amount'
+                currency:
+                  $ref: '#/components/schemas/currency_code'
+                orderType:
+                  $ref: '#/components/schemas/order_type'
+                orderId:
+                  $ref: '#/components/schemas/order_id'
+                sessionId:
+                  $ref: '#/components/schemas/session_id'
+                timestamp:
+                  $ref: '#/components/schemas/timestamp'
+                transaction:
+                  $ref: '#/components/schemas/transaction'
       responses:
-        405:
-          description: "Invalid input"
+        '200':
+          description: Capture was successful for provided `certificationKey`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/capture_id'
+        '400':
+            description: Some pararameters provided are invalid.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        '401':
+            description: Unauthorized.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        '403':
+            description: Forbidden.
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Error'
+        '404':
+          description: No gift certificate found for the provided `certificationKey`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many invalid requests.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-    delete:
+        - ApiKeyAuth: []
+  /gift_cert/refund:
+    post:
+      summary: Refund amount to a gift certificate.
       tags:
-      - "pet"
-      summary: "Deletes a pet"
-      description: ""
-      operationId: "deletePet"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "petId"
-        in: "path"
-        description: "Pet id to delete"
+        - Gift certificates
+      requestBody:
         required: true
-        type: "integer"
-        format: "int64"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - certificationKey
+                - amount
+                - currencyCode
+              properties:
+                certificationKey:
+                  $ref: '#/components/schemas/certification_key'
+                amount:
+                  $ref: '#/components/schemas/amount'
+                currencyCode:
+                  $ref: '#/components/schemas/currency_code'
+                orderId:
+                  $ref: '#/components/schemas/order_id'
+                sessionId:
+                  $ref: '#/components/schemas/session_id'
+                timestamp:
+                  $ref: '#/components/schemas/timestamp'
       responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Pet not found"
+        '200':
+          description: Amount successfully refunded to provided `certificationKey`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Refund successful"
+        '404':
+          description: No gift certificate found for the provided `certificationKey`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
-      - petstore_auth:
-        - "write:pets"
-        - "read:pets"
-  /store/order:
+        - ApiKeyAuth: []
+  /points/status:
     post:
+      summary: Get the required points info of a provided frequent flyer account.
       tags:
-      - "store"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
+        - Points
+      requestBody:
         required: true
-        schema:
-          $ref: "#/definitions/Order"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+                - currency
+                - orderType
+                - sessionId
+              properties: 
+                accessToken:
+                  $ref: '#/components/schemas/access_token'
+                currency:
+                  $ref: '#/components/schemas/currency_code'
+                orderType:
+                  $ref: '#/components/schemas/order_type'
+                sessionId:
+                  $ref: '#/components/schemas/session_id'
       responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid Order"
-  /store/order/{orderId}:
-    get:
-      tags:
-      - "store"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.\
-        \ Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10
-        minimum: 1
-        format: "int64"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Order"
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-    delete:
-      tags:
-      - "store"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.\
-        \ Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1
-        format: "int64"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Order not found"
-  /store/inventory:
-    get:
-      tags:
-      - "store"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
+        '200':
+          description: Information for the given frequent flyer account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/frequent_flyer_info'
+        '404':
+          description: No frequent flyer account found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
-      - api_key: []
-  /user/createWithArray:
+        - ApiKeyAuth: []
+  /points/capture:
     post:
+      summary: Withdraw points from a logged-in frequent flyer account.
       tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
+        - Points
+      requestBody:
         required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+                - frequentFlyerNumber
+                - orderType
+                - pointsToCapture
+                - monetaryValueOfPointsToCapture
+                - currencyCode
+              properties:
+                accessToken:
+                  $ref: '#/components/schemas/access_token'
+                frequentFlyerNumber:
+                  $ref: '#/components/schemas/frequent_flyer_number'
+                orderType:
+                  $ref: '#/components/schemas/order_type'
+                pointsToCapture:
+                  $ref: '#/components/schemas/amount'
+                monetaryValueOfPointsToCapture:
+                  $ref: '#/components/schemas/amount'
+                currencyCode:
+                  $ref: '#/components/schemas/currency_code'
+                amountNotPaidByPoints:
+                  $ref: '#/components/schemas/amount'
       responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
+        '200':
+          description: Points successfully captured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/capture_id'
+        '404':
+          description: No frequent flyer account found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ApiKeyAuth: []
+  /points/refund:
     post:
+      summary: Refund points to a frequent flyer account.
       tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
+        [Points]
+      requestBody:
         required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - capture_id
+                - frequent_flyer_number
+                - order_type
+                - points_to_refund
+                - monetary_value_of_points_to_refund
+                - currency_code
+              properties:
+                captureId:
+                  $ref: '#/components/schemas/capture_id'
+                frequentFlyerNumber:
+                  $ref: '#/components/schemas/frequent_flyer_number'
+                orderType:
+                  $ref: '#/components/schemas/order_type'
+                pointsToRefund:
+                  $ref: '#/components/schemas/amount'
+                monetaryValueOfPointsToRefund:
+                  $ref: '#/components/schemas/amount'
+                currency:
+                  $ref: '#/components/schemas/currency_code'
       responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/login:
-    get:
-      tags:
-      - "user"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          headers:
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-          schema:
-            type: "string"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
-    get:
-      tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user:
-    post:
-      tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      - "application/xml"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-securityDefinitions:
-  api_key:
-    type: "apiKey"
-    name: "api_key"
-    in: "header"
-  petstore_auth:
-    type: "oauth2"
-    authorizationUrl: "https://petstore.swagger.io/oauth/authorize"
-    flow: "implicit"
-    scopes:
-      read:pets: "read your pets"
-      write:pets: "modify pets in your account"
-definitions:
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
-      message:
-        type: "string"
-  Category:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Category"
-  Pet:
-    type: "object"
-    required:
-    - "name"
-    - "photoUrls"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      category:
-        $ref: "#/definitions/Category"
-      name:
-        type: "string"
-        example: "doggie"
-      photoUrls:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          type: "string"
-          xml:
-            name: "photoUrl"
-      tags:
-        type: "array"
-        xml:
-          wrapped: true
-        items:
-          xml:
-            name: "tag"
-          $ref: "#/definitions/Tag"
-      status:
-        type: "string"
-        description: "pet status in the store"
-        enum:
-        - "available"
-        - "pending"
-        - "sold"
-    xml:
-      name: "Pet"
-  Tag:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    xml:
-      name: "Tag"
-  Order:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      petId:
-        type: "integer"
-        format: "int64"
-      quantity:
-        type: "integer"
-        format: "int32"
-      shipDate:
-        type: "string"
-        format: "date-time"
-      status:
-        type: "string"
-        description: "Order Status"
-        enum:
-        - "placed"
-        - "approved"
-        - "delivered"
-      complete:
-        type: "boolean"
-    xml:
-      name: "Order"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-    xml:
-      name: "User"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+        '200':
+          description: Amount successfully refunded to the provided frequent flyer account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Refund successful"
+        '404':
+          description: No frequent flyer account found for the provided `frequent_flyer_number`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - ApiKeyAuth: []
+components:
+  schemas:
+    certification_key:
+      type: string
+      pattern: '^[A-Z0-9]{8}$'
+      description: The unique 8-character identifier of a gift certificate, consisting of both letters and numbers.
+
+    amount:
+      type: number
+      format: double
+      description: Monetary amount in the specified currency.
+
+    currency_code:
+      type: string
+      enum: [ISK, USD, GBP, EUR, CAD, NOK, SEK, DKK, CHF]
+      pattern: '^[A-Z]{3}$'
+      description: 3-letter ISO currency code.
+
+    is_valid:
+      type: boolean
+      description: Indicates whether the gift certificate is valid for use.
+
+    order_id:
+      type: string
+      pattern: '^[A-Z0-9]{6}$'
+      description: Identifier from the system selling a service or product, like a flight booking Record Locator/PNR.
+
+    order_type:
+      type: string
+      enum: [flight_booking, package_booking, gift_certificate, carbon_offset, ancillaries, other]
+      description: Type of the order to be paid for.
+
+    capture_id:
+      type: string
+      description: Transaction ID in the payment or gift certificate system.
+
+    access_token:
+      type: string
+      description: Token from Icelandair's authentication service for accessing frequent flyer information.
+
+    frequent_flyer_number:
+      type: string
+      description: Unique identifier for a frequent flyer.
+
+    first_name:
+      type: string
+      description: First name of the frequent flyer.
+
+    last_name:
+      type: string
+      description: Last name of the frequent flyer.
+
+    points_balance:
+      type: number
+      format: double
+      description: Number of points in the frequent flyer account.
+
+    monetary_balance:
+      type: number
+      format: double
+      description: Monetary value equivalent of the points balance.
+
+    points_exchange_rate:
+      type: number
+      format: double
+      description: Exchange rate to convert points to monetary value.
+
+    tier:
+      type: string
+      enum: [Blue, Silver, Gold]
+      description: Membership tier of the frequent flyer account.
+
+    transaction_id:
+      type: string
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      description: UUID provided for the transaction, used for rollback and capture
+
+    timestamp:
+      type: string
+      pattern: '^20[2-5][1-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0\d|1\d|2[0-3]):([0-5]\d):([0-5]\d)\.\d{3}$'
+      description: Timestamp on the format "yyyy-MM-dd hh:mm:ss.SSS" example - 2024-03-12 14:48:17.023
+
+    expiration:
+      type: string
+      pattern: '^20[2-5][1-9]-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0\d|1\d|2[0-3]):([0-5]\d):([0-5]\d)\.\d{3}$'
+      description: Timestamp for when the transaction is no longer valid
+
+    session_id:
+      type: string
+      pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$
+      description: Session id provided by Icelandair when user is sent to cellpoint.
+
+    transaction:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/transaction_id'
+        expiration:
+          $ref: '#/components/schemas/expiration'
+      required: 
+        - transaction_id
+      description: Information about the transaction
+
+
+    gift_cert_info:
+      type: object
+      properties:
+        amountAvailable:
+          $ref: '#/components/schemas/amount'
+        currency:
+          $ref: '#/components/schemas/currency_code'
+        isValid:
+          type: boolean
+        certificationKey:
+          $ref: '#/components/schemas/certification_key'
+        transaction:
+          $ref: '#/components/schemas/transaction'
+      required: [certificationKey, isValid, amountAvailable, currencyCode]
+      description: Detailed information about a gift certificate.
+
+    frequent_flyer_info:
+      type: object
+      properties:
+        firstName:
+          $ref: '#/components/schemas/first_name'
+        lastName:
+          $ref: '#/components/schemas/last_name'
+        pointsBalance:
+          $ref: '#/components/schemas/points_balance'
+        monetaryBalance:
+          $ref: '#/components/schemas/monetary_balance'
+        pointsExchangeRate:
+          $ref: '#/components/schemas/points_exchange_rate'
+        frequentFlyerNumber:
+          $ref: '#/components/schemas/frequent_flyer_number'
+        tier:
+          $ref: '#/components/schemas/tier'
+      required: [first_name, last_name, points_balance, monetary_balance, points_exchange_rate, frequent_flyer_number, tier]
+      description: Information about a frequent flyer account.
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A human-readable error message indicating the nature of the error.
+      required: [message]
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: API key for secure access. Must be included in the header of requests.
