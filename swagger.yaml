@@ -240,7 +240,7 @@ paths:
         - basicAuth: []
   /gift_cert/void:
     post:
-      summary: Void a transaction that has been authenticated
+      summary: Void a transaction that has been authorized
       tags:
         - Gift certificates
       requestBody:
