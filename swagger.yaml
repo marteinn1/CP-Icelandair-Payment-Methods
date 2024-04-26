@@ -279,6 +279,26 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - basicAuth: []
+
+  /points/authorize:
+    post:
+      summary: Authorize points redemption
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authorize_request'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authorize_response'
+      security:
+        -basicAuth: []
+
   /points/capture:
     post:
       summary: Withdraw points from a logged-in frequent flyer account.
@@ -543,6 +563,212 @@ components:
           $ref: '#/components/schemas/tier'
       required: [first_name, last_name, points_balance, monetary_balance, points_exchange_rate, frequent_flyer_number, tier]
       description: Information about a frequent flyer account.
+      
+    authorize_request:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/order'
+
+    order:
+      type: object
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/payment'
+        price:
+          $ref: '#/components/schemas/price'
+        external_payment_references:
+          type: array
+          items:
+            $ref: '#/components/schemas/external_payment_reference'
+        extra_info:
+          $ref: '#/components/schemas/extra_info'
+        partner:
+          $ref: '#/components/schemas/partner'
+        product:
+          $ref: '#/components/schemas/product'
+
+    payment:
+      type: object
+      properties:
+        sub_type:
+          type: string
+        awards:
+          $ref: '#/components/schemas/award'
+
+    award:
+      type: object
+      properties:
+        amount:
+          type: string
+        code:
+          type: string
+        debited_member:
+          $ref: '#/components/schemas/member'
+
+    member:
+      type: object
+      properties:
+        membership_id:
+          type: string
+
+    price:
+      type: object
+      properties:
+        monetary_amount:
+          type: string
+        currency_code:
+          type: string
+        base:
+          $ref: '#/components/schemas/base_price'
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/tax'
+
+    base_price:
+      type: object
+      properties:
+        monetary_amount:
+          type: string
+        currency_code:
+          type: string
+
+    tax:
+      type: object
+      properties:
+        monetary_amount:
+          type: string
+        currency_code:
+          type: string
+        indicator:
+          type: string
+        rate:
+          type: string
+
+    external_payment_reference:
+      type: object
+      properties:
+        monetary:
+          $ref: '#/components/schemas/monetary'
+
+    monetary:
+      type: object
+      properties:
+        method:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+
+    extra_info:
+      type: object
+      properties:
+        mev_amount:
+          type: string
+        mev_method:
+          type: string
+        mev_currency:
+          type: string
+
+    partner:
+      type: object
+      properties:
+        code:
+          type: string
+
+    product:
+      type: object
+      properties:
+        catalogue_reference:
+          type: string
+        reference_date:
+          type: string
+        sub_type:
+          type: string
+        source:
+          $ref: '#/components/schemas/source'
+        flight:
+          $ref: '#/components/schemas/flight'
+
+    source:
+      type: object
+      properties:
+        pnr:
+          $ref: '#/components/schemas/pnr'
+
+    pnr:
+      type: object
+      properties:
+        passenger_names:
+          type: array
+          items:
+            $ref: '#/components/schemas/passenger_name'
+        record_locator:
+          type: string
+
+    passenger_name:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+
+    flight:
+      type: object
+      properties:
+        ticket:
+          $ref: '#/components/schemas/ticket'
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/segment'
+
+    ticket:
+      type: object
+      properties:
+        number:
+          type: string
+
+    segment:
+      type: object
+      properties:
+        departure:
+          $ref: '#/components/schemas/location'
+        arrival:
+          $ref: '#/components/schemas/location'
+        carrier_code:
+          type: string
+        number:
+          type: string
+        suffix:
+          type: string
+        booking_class:
+          type: string
+        operating:
+          $ref: '#/components/schemas/operating'
+        booked_at:
+          type: string
+
+    location:
+      type: object
+      properties:
+        iata_code:
+          type: string
+        at:
+          type: string
+
+    operating:
+      type: object
+      properties:
+        booking_class:
+          type: string
 
     Error:
       type: object
