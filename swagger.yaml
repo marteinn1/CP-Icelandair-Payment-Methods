@@ -279,52 +279,6 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - basicAuth: []
-  /points/status:
-    post:
-      summary: Get the required points info of a provided frequent flyer account.
-      tags:
-        - Points
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - accessToken
-                - currency
-                - orderType
-                - sessionId
-              properties: 
-                accessToken:
-                  $ref: '#/components/schemas/access_token'
-                currency:
-                  $ref: '#/components/schemas/currency_code'
-                orderType:
-                  $ref: '#/components/schemas/order_type'
-                sessionId:
-                  $ref: '#/components/schemas/session_id'
-      responses:
-        '200':
-          description: Information for the given frequent flyer account.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/frequent_flyer_info'
-        '404':
-          description: No frequent flyer account found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '500':
-          description: Unexpected error.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - basicAuth: []
   /points/capture:
     post:
       summary: Withdraw points from a logged-in frequent flyer account.
