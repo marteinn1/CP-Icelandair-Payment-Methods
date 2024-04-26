@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/gift_cert_authorization'
+                $ref: '#/components/schemas/gift_cert_authorization_response'
         '404':
           description: No gift certificate found for the provided `certificationKey` or it has expired.
           content:
@@ -281,21 +281,35 @@ paths:
         - basicAuth: []
 
   /points/authorize:
-    post:
+    post: 
       summary: Authorize points redemption
+      tags:
+        [Points]
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/points_authorize_request'
-      responses:
+      responses: 
         '200':
-          description: OK
+          description: Points successfully captured.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/authorize_response'
+                $ref: '#/components/schemas/capture_id'
+        '404':
+          description: No frequent flyer account found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       security:
         -basicAuth: []
 
@@ -527,7 +541,7 @@ components:
       required: [certificationKey, isValid, amountAvailable, currencyCode]
       description: Detailed information about a gift certificate.
 
-    gift_cert_authorization:
+    gift_cert_authorization_response:
       type: object
       properties:
         amountAvailable:
@@ -540,10 +554,17 @@ components:
           $ref: '#/components/schemas/certification_key'
         transaction:
           $ref: '#/components/schemas/transaction'
+      required: [certificationKey, isValid, amountAvailable, currency, transaction]
+      description: Information about the authorization with the transactionId which is used for the capture or void.
 
-      required: [certificationKey, isValid, amountAvailable, currencyCode]
-      description: Detailed information about a gift certificate.
-
+    points_authorization_response:
+      type: object
+      properties:
+        transaction:
+          $ref: '#/components/schemas/transaction'
+      required: [transaction]
+      description: Information about the authorization with the transactionId which is used for the capture or void.
+      
     frequent_flyer_info:
       type: object
       properties:
