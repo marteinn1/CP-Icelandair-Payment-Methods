@@ -1,0 +1,198 @@
+{
+  "data": {
+    "mode": "CAPTURE",
+    "customMeta": {},
+    "orders": [
+      {
+        "payments": [
+          {
+            "subType": "AWARDS",
+            "awards": {
+              "amount": "9999",  //POINTS TO REDEEM
+              "code": "SAP",
+              "debitedMember": {
+                "membershipId": "1209002222" //MEMBERSHIP_ID
+              }
+            }
+          }
+        ],
+        "price": {
+          "monetaryAmount": "1245.80", //TOTAL PRICE OF TICKET
+          "currencyCode": "USD",       //CURRENCY OF THE TICKET
+          "base": {
+            "monetaryAmount": "718.00", //BASE VALUE OF TICKET
+            "currencyCode": "USD"
+          },
+          "taxes": [
+            {
+              "monetaryAmount": "527.80", //TAXES OF TICKET
+              "currencyCode": "USD",
+              "indicator": "X",
+              "rate": "527.80"
+            }
+          ]
+        },
+        "externalPaymentReferences": [
+          {
+            "monetary": {
+              "method": "CC",       //CreditCard
+              "amount": 1202.78,
+              "currency": "USD"
+            }
+          },
+          {
+            "monetary": {
+              "method": "MS",      //Gift Certificate
+              "amount": 50.00,
+              "currency": "USD"
+            }
+          },
+          {
+            "monetary": {
+              "method": "CA",    // Cash
+              "amount": 50.00,
+              "currency": "USD"
+            }
+          }
+        ],
+        "extraInfo": {
+          "MEV_AMOUNT": "43.02", //VALUE OF THE POINTS IN USD
+          "MEV_METHOD": "Monetary equivalent value",
+          "MEV_CURRENCY": "USD"
+        },
+        "partner": {
+          "code": "FI"
+        },
+        "product": {
+          "catalogueReference": "FLIGHT_TICKET_ISSUANCE",
+          "referenceDate": "2024-04-04",  //TICKET ISSUANCE DATE
+          "subType": "FLIGHT",
+          "source": {
+            "pnr": {
+              "passengerNames": [
+                {
+                  "firstName": "Jon",  //PASSANGER NAME
+                  "lastName": "Sagaclub"
+                }
+              ],
+              "recordLocator": "XYYYYX"  //PNR
+            }
+          },
+          "flight": {
+            "ticket": {
+              "number": "1088888867818" //TICKETNUMBER
+            },
+            "segments": [                               
+              {                                         //SEGMENT 1
+                "departure": {
+                  "iataCode": "GEG",  
+                  "at": "2024-09-13T00:00:00"
+                },
+                "arrival": {
+                  "iataCode": "SEA",
+                  "at": "2024-09-13T00:00:00"
+                },
+                "carrierCode": "AS",
+                "number": "961",
+                "suffix": "",
+                "bookingClass": "G",
+                "operating": {
+                  "bookingClass": "G"
+                },
+                "bookedAt": "2024-04-01T00:00:00.000+00:00"
+              },
+              {                                         //SEGMENT 2
+                "departure": {
+                  "iataCode": "SEA",
+                  "at": "2024-09-13T00:00:00"
+                },
+                "arrival": {
+                  "iataCode": "KEF",
+                  "at": "2024-09-14T00:00:00"
+                },
+                "carrierCode": "FI",
+                "number": "608",
+                "suffix": "",
+                "bookingClass": "O",
+                "operating": {
+                  "bookingClass": "O"
+                },
+                "bookedAt": "2024-04-01T00:00:00.000+00:00"
+              },
+              {                                         //SEGMENT 3
+                "departure": {
+                  "iataCode": "KEF",
+                  "at": "2024-09-14T00:00:00"
+                },
+                "arrival": {
+                  "iataCode": "LHR",
+                  "at": "2024-09-14T00:00:00"
+                },
+                "carrierCode": "FI",
+                "number": "450",
+                "suffix": "",
+                "bookingClass": "O",
+                "bookedAt": "2024-04-01T00:00:00.000+00:00"
+              },
+              {                                         //SEGMENT 4
+                "departure": {
+                  "iataCode": "LHR",
+                  "at": "2024-09-30T00:00:00"
+                },
+                "arrival": {
+                  "iataCode": "KEF",
+                  "at": "2024-09-30T00:00:00"
+                },
+                "carrierCode": "FI",
+                "number": "451",
+                "suffix": "",
+                "bookingClass": "O",
+                "operating": {
+                  "bookingClass": "O"
+                },
+                "bookedAt": "2024-04-01T00:00:00.000+00:00"
+              },
+              {                                         //SEGMENT 5
+                "departure": {
+                  "iataCode": "KEF",
+                  "at": "2024-09-30T00:00:00"
+                },
+                "arrival": {
+                  "iataCode": "SEA",
+                  "at": "2024-09-30T00:00:00"
+                },
+                "carrierCode": "FI",
+                "number": "681",
+                "suffix": "",
+                "bookingClass": "O",
+                "operating": {
+                  "bookingClass": "O"
+                },
+                "bookedAt": "2024-04-01T00:00:00.000+00:00"
+              },
+              {                                         //SEGMENT 6
+                "departure": {
+                  "iataCode": "SEA",
+                  "at": "2024-09-30T00:00:00"
+                },
+                "arrival": {
+                  "iataCode": "GEG",
+                  "at": "2024-09-30T00:00:00"
+                },
+                "carrierCode": "FI",
+                "number": "7611",
+                "suffix": "",
+                "bookingClass": "O",
+                "operating": {
+                  "bookingClass": "O"
+                },
+                "bookedAt": "2024-04-01T00:00:00.000+00:00"  // BOOKING DATE
+              }
+            ],
+            "priceFareComponents": null
+          }
+        }
+      }
+    ]
+  }
+}
