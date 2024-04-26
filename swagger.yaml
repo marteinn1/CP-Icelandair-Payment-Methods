@@ -70,9 +70,8 @@ paths:
               type: object
               required:
                 - certificationKey
-                - amount
-                - currencyCode
-                - orderType
+                - sessionId
+                - currency
               properties:
                 certificationKey:
                   $ref: '#/components/schemas/certification_key'
@@ -80,8 +79,6 @@ paths:
                   $ref: '#/components/schemas/currency_code'
                 sessionId:
                   $ref: '#/components/schemas/session_id'
-                timestamp:
-                  $ref: '#/components/schemas/timestamp'
       responses:
         '200':
           description: The status and available amount of provided `certificationKey`.
