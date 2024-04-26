@@ -596,174 +596,86 @@ components:
     order:
       type: object
       properties:
-        payments:
-          type: array
-          items:
-            $ref: '#/components/schemas/payment'
-        price:
-          $ref: '#/components/schemas/price'
-        external_payment_references:
-          type: array
-          items:
-            $ref: '#/components/schemas/external_payment_reference'
-        extra_info:
-          $ref: '#/components/schemas/extra_info'
-        partner:
-          $ref: '#/components/schemas/partner'
-        product:
-          $ref: '#/components/schemas/product'
-
-    payment:
-      type: object
-      properties:
-        subType:
-          type: string
-        awards:
-          type: object
-          properties:
-            amount:
-              type: string
-            code:
-              type: string
-            debitedMember:
-              type: object
-              properties:
-                membershipId:
-                  type: string
-
-    price:
-      type: object
-      properties:
-        monetaryAmount:
-          type: string
-        currencyCode:
-          type: string
-        base:
-          type: object
+        pointsAmount:
+          type: "string"
+        memberShipId:
+          type: "string"
+        monetaryEquivalentAmount:
+          type: "string"
+        monetaryEquivalentCurrency:
+          type: "string"
+        ticket:
+          type: "object"
           properties:
             monetaryAmount:
-              type: string
-            currencyCode:
-              $ref: '#/components/schemas/currency_code'
-        taxes:
-          type: array
-          items:
-            type: object
-            properties:
-              monetaryAmount:
-                type: string
-              currencyCode:
-                type: string
-              indicator:
-                type: string
-              rate:
-                type: string
-
-    external_payment_reference:
-      type: object
-      properties:
-        monetary:
-          type: object
-          properties:
-            method:
-              type: string
-            amount:
-              type: number
+              type: "string"
+            issuanceDate:
+              type: "string"
             currency:
-              type: string
-
-    extra_info:
-      type: object
-      properties:
-        mev_amount:
-          type: string
-        mev_method:
-          type: string
-        mev_currency:
-          type: string
-
-    partner:
-      type: object
-      properties:
-        code:
-          type: string
-
-    product:
-      type: object
-      properties:
-        catalogueReference:
-          type: string
-        referenceDate:
-          type: string
-        subType:
-          type: string
-        source:
-          type: object
-          properties:
-            pnr:
-              type: object
+              type: "string"
+            base:
+              type: "object"
               properties:
-                passengerNames:
-                  type: array
-                  items:
-                    type: object
+                monetaryAmount:
+                  type: "string"
+                currency:
+                  type: "string"
+            taxes:
+              type: "object"
+              properties:
+                monetaryAmount:
+                  type: "string"
+                currency:
+                  type: "string"
+                indicator:
+                  type: "string"
+                rate:
+                  type: "string"
+            otherPaymentMethods:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  method:
+                    type: "string"
+                  amount:
+                    type: "string"
+                  currency:
+                    type: "string"
+            segments:
+              type: "array"
+              items:
+                type: "object"
+                properties:
+                  departure:
+                    type: "object"
                     properties:
-                      firstName:
-                        type: string
-                      lastName:
-                        type: string
-                recordLocator:
-                  type: string
-            flight:
-              $ref: '#/components/schemas/flight'
-
-    flight:
-      type: object
-      properties:
-        ticket:
-          type: object
-          properties:
-            number:
-              type: string
-        segments:
-          type: array
-          items:
-            $ref: '#/components/schemas/segment'
-
-    segment:
-          type: array
-          items:
-            type: object
-            properties:
-              departure:
-                type: object
-                properties:
-                  iataCode:
-                    type: string
-                  at:
-                    type: string
-              arrival:
-                type: object
-                properties:
-                  iataCode:
-                    type: string
-                  at:
-                    type: string
-              carrierCode:
-                type: string
-              number:
-                type: string
-              suffix:
-                type: string
-              bookingClass:
-                type: string
-              operating:
-                type: object
-                properties:
+                      iataCode:
+                        type: "string"
+                      at:
+                        type: "string"
+                  arrival:
+                    type: "object"
+                    properties:
+                      iataCode:
+                        type: "string"
+                      at:
+                        type: "string"
+                  carrierCode:
+                    type: "string"
+                  number:
+                    type: "string"
+                  suffix:
+                    type: "string"
                   bookingClass:
-                    type: string
-              bookedAt:
-                type: string
+                    type: "string"
+                  operating:
+                    type: "object"
+                    properties:
+                      bookingClass:
+                        type: "string"
+                  bookedAt:
+                    type: "string"
 
     Error:
       type: object
