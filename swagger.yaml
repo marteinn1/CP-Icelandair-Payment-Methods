@@ -671,15 +671,15 @@ components:
             currency:
               type: string
         taxes:
-          $ref: '#/definitions/tax'
+          $ref: '#/components/schemas/tax'
         other_payment_methods:
           type: array
           items:
-            $ref: '#/definitions/payment_method'
+            $ref: '#/components/schemas/payment_method'
         segments:
           type: array
           items:
-            $ref: '#/definitions/ticket_segment'
+            $ref: '#/components/schemas/ticket_segment'
 
     membership:
       type: object
@@ -693,7 +693,7 @@ components:
         monetary_equivalent_currency:
           type: string
         ticket:
-          $ref: '#/definitions/ticket'
+          $ref: '#/components/schemas/ticket'
 
     Error:
       type: object
