@@ -591,91 +591,109 @@ components:
         orders:
           type: array
           items:
-            $ref: '#/components/schemas/order'
+            $ref: '#/components/schemas/membership'
 
-    order:
+    ticket_segment:
       type: object
       properties:
-        pointsAmount:
-          type: "string"
-        memberShipId:
-          type: "string"
-        monetaryEquivalentAmount:
-          type: "string"
-        monetaryEquivalentCurrency:
-          type: "string"
-        ticket:
-          type: "object"
+        departure:
+          type: object
           properties:
-            monetaryAmount:
-              type: "string"
-            issuanceDate:
-              type: "string"
+            iata_code:
+              type: string
+            at:
+              type: string
+          required:
+            - iata_code
+            - at
+        arrival:
+          type: object
+          properties:
+            iata_code:
+              type: string
+            at:
+              type: string
+          required:
+            - iata_code
+            - at
+        carrier_code:
+          type: string
+        number:
+          type: string
+        suffix:
+          type: string
+        booking_class:
+          type: string
+        operating:
+          type: object
+          properties:
+            booking_class:
+              type: string
+        booked_at:
+          type: string
+
+    tax:
+      type: object
+      properties:
+        monetary_amount:
+          type: string
+        currency:
+          type: string
+        indicator:
+          type: string
+        rate:
+          type: string
+
+    payment_method:
+      type: object
+      properties:
+        method:
+          type: string
+        amount:
+          type: string
+        currency:
+          type: string
+
+    ticket:
+      type: object
+      properties:
+        monetary_amount:
+          type: string
+        issuance_date:
+          type: string
+        currency:
+          type: string
+        base:
+          type: object
+          properties:
+            monetary_amount:
+              type: string
             currency:
-              type: "string"
-            base:
-              type: "object"
-              properties:
-                monetaryAmount:
-                  type: "string"
-                currency:
-                  type: "string"
-            taxes:
-              type: "object"
-              properties:
-                monetaryAmount:
-                  type: "string"
-                currency:
-                  type: "string"
-                indicator:
-                  type: "string"
-                rate:
-                  type: "string"
-            otherPaymentMethods:
-              type: "array"
-              items:
-                type: "object"
-                properties:
-                  method:
-                    type: "string"
-                  amount:
-                    type: "string"
-                  currency:
-                    type: "string"
-            segments:
-              type: "array"
-              items:
-                type: "object"
-                properties:
-                  departure:
-                    type: "object"
-                    properties:
-                      iataCode:
-                        type: "string"
-                      at:
-                        type: "string"
-                  arrival:
-                    type: "object"
-                    properties:
-                      iataCode:
-                        type: "string"
-                      at:
-                        type: "string"
-                  carrierCode:
-                    type: "string"
-                  number:
-                    type: "string"
-                  suffix:
-                    type: "string"
-                  bookingClass:
-                    type: "string"
-                  operating:
-                    type: "object"
-                    properties:
-                      bookingClass:
-                        type: "string"
-                  bookedAt:
-                    type: "string"
+              type: string
+        taxes:
+          $ref: '#/definitions/tax'
+        other_payment_methods:
+          type: array
+          items:
+            $ref: '#/definitions/payment_method'
+        segments:
+          type: array
+          items:
+            $ref: '#/definitions/ticket_segment'
+
+    membership:
+      type: object
+      properties:
+        points_amount:
+          type: string
+        membership_id:
+          type: string
+        monetary_equivalent_amount:
+          type: string
+        monetary_equivalent_currency:
+          type: string
+        ticket:
+          $ref: '#/definitions/ticket'
 
     Error:
       type: object
