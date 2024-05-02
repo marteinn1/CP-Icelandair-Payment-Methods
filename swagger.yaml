@@ -588,7 +588,7 @@ components:
     points_authorize_request:
       type: object
       properties:
-        authorize:
+        order:
           $ref: '#/components/schemas/membership'
 
     ticket_segment:
