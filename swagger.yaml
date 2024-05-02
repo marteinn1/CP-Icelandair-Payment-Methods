@@ -588,6 +588,10 @@ components:
     points_authorize_request:
       type: object
       properties:
+        orderType:
+          $ref: '#/components/schemas/order_type'
+        sessionId:
+          $ref: '#/components/schemas/session_id'
         order:
           $ref: '#/components/schemas/membership'
 
