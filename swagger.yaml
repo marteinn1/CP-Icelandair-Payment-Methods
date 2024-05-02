@@ -21,7 +21,7 @@ paths:
                 - currency
                 - orderType
                 - sessionId
-                - timestamp
+                - timestamps
               properties:
                 certificationKey:
                   $ref: '#/components/schemas/certification_key'
@@ -588,10 +588,7 @@ components:
     points_authorize_request:
       type: object
       properties:
-        orders:
-          type: array
-          items:
-            $ref: '#/components/schemas/membership'
+        $ref: '#/components/schemas/membership'
 
     ticket_segment:
       type: object
