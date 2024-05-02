@@ -588,7 +588,8 @@ components:
     points_authorize_request:
       type: object
       properties:
-        $ref: '#/components/schemas/membership'
+        authorize:
+          $ref: '#/components/schemas/membership'
 
     ticket_segment:
       type: object
